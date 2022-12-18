@@ -20,7 +20,6 @@ class AccesDCredit(bank.Bank):
                 entry = bank.Transaction()
 
                 date_str = row['Date']
-                print(date_str)
                 date_str = re.sub('D\u00C9C', 'dec', date_str)
                 date_str = re.sub('nov.', 'nov', date_str)
                 date_str = re.sub('sept.', 'sep', date_str)
@@ -31,7 +30,6 @@ class AccesDCredit(bank.Bank):
                 match = date_pattern.match(date_str)
                 if match:
                     date_str = "{} {} 2022".format(match.group(2), match.group(1))
-                print(date_str)
                 entry.date = datetime.datetime.strptime(date_str, "%d %b %Y")
 
                 entry.description = self.filter_desc(row['Description'])
