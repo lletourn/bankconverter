@@ -2,34 +2,38 @@ import bank
 import csv
 import datetime
 import decimal
+import re
+
 
 class AccesD(bank.Bank):
     def __init__(self):
         bank.Bank.__init__(self)
-    
-    def add(self, file):
-        with open(file, "r") as csvfile:
-            reader = csv.reader(csvfile, delimiter=',', quoting=csv.QUOTE_ALL)
-            for row in reader:
-                entry = None
-                if(len(row) == 0):
-                    continue;
+        super().__init__()
 
-                desc = self.filter_desc(row[5])
-                if(row[0].startswith("VISA")):
-                    if(len(row[11]) > 0 and len(row[12]) == 0):
-                        entry = (datetime.datetime.strptime(row[3], "%Y/%m/%d"), False, desc, decimal.Decimal(row[11]))
-                    elif(len(row[11]) == 0 and len(row[12]) > 0):
-                        entry = (datetime.datetime.strptime(row[3], "%Y/%m/%d"), False, desc, decimal.Decimal(-1)*decimal.Decimal(row[12]))
-                    else:
-                        raise RuntimeError("Col 11 and 12 for Visa have values!")
+    def add(self, file):
+        with open(file, "r", encoding='utf-8-sig') as csvfile:
+            reader = csv.DictReader(csvfile, delimiter=',', quotechar='"')
+            for row in reader:
+                entry = bank.Transaction()
+
+                date_str = row['Date']
+                date_str = re.sub('D\u00C9C', 'dec', date_str)
+                date_str = re.sub('nov.', 'nov', date_str)
+                date_str = re.sub('sept.', 'sep', date_str)
+                date_str = re.sub('AO\u00DB', 'aug', date_str)
+                date_str = re.sub('MAI', 'may', date_str)
+                date_str = re.sub('AVR', 'apr', date_str)
+                date_str = re.sub('F\u00C9V', 'feb', date_str)
+                entry.date = datetime.datetime.strptime(date_str, "%d %b %Y")
+                entry.description = self.filter_desc(row['Descriptif'])
+                entry.account = None
+                entry.credit = None
+
+                if row['Retrait ($)']:
+                    entry.account = -1*decimal.Decimal(re.sub(r'[^\d.\-]', '', re.sub(r',', '.', row['Retrait ($)'])))
+                elif row['Dépôt ($)']:
+                    entry.account = decimal.Decimal(re.sub(r'[^\d.\-]', '', re.sub(r',', '.', row['Dépôt ($)'])))
                 else:
-                    if(len(row[8]) > 0 and len(row[7]) == 0):
-                        entry = (datetime.datetime.strptime(row[3], "%Y/%m/%d"), True, desc, decimal.Decimal(row[8]))
-                    elif(len(row[8]) == 0 and len(row[7]) > 0):
-                        entry = (datetime.datetime.strptime(row[3], "%Y/%m/%d"), True, desc, decimal.Decimal(-1.0) * decimal.Decimal(row[7]))
-                    else:
-                        raise RuntimeError("Col 8 and 7 for Credit have values!")
-                
-                if(entry):
-                    self.entries.append(entry)
+                    raise RuntimeError("No match")
+
+                self.entries.append(entry)
