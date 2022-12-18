@@ -1,13 +1,12 @@
-import bank
 import csv
 import datetime
 import decimal
 import re
+import bankconverter.bank
 
 
-class AccesDCredit(bank.Bank):
+class AccesDCredit(bankconverter.bank.Bank):
     def __init__(self):
-        bank.Bank.__init__(self)
         super().__init__()
 
     def add(self, file):
@@ -17,7 +16,7 @@ class AccesDCredit(bank.Bank):
             for row in reader:
                 if row['Date'] == "Total":
                     continue
-                entry = bank.Transaction()
+                entry = bankconverter.bank.Transaction()
 
                 date_str = row['Date']
                 date_str = re.sub('D\u00C9C', 'dec', date_str)

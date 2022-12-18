@@ -1,20 +1,19 @@
-import bank
 import csv
 import datetime
 import decimal
 import re
+import bankconverter.bank
 
 
-class AccesD(bank.Bank):
+class AccesD(bankconverter.bank.Bank):
     def __init__(self):
-        bank.Bank.__init__(self)
         super().__init__()
 
     def add(self, file):
         with open(file, "r", encoding='utf-8-sig') as csvfile:
             reader = csv.DictReader(csvfile, delimiter=',', quotechar='"')
             for row in reader:
-                entry = bank.Transaction()
+                entry = bankconverter.bank.Transaction()
 
                 date_str = row['Date']
                 date_str = re.sub('D\u00C9C', 'dec', date_str)

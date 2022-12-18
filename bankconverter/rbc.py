@@ -1,11 +1,11 @@
-import bank
 import csv
 import datetime
 import decimal
 import re
+import bankconverter.bank
 
 
-class RBC(bank.Bank):
+class RBC(bankconverter.bank.Bank):
     def __init__(self):
         super().__init__()
 
@@ -13,7 +13,7 @@ class RBC(bank.Bank):
         with open(filename, "r", encoding='utf-8-sig') as csvfile:
             reader = csv.DictReader(csvfile, delimiter=',', quoting=csv.QUOTE_ALL)
             for row in reader:
-                entry = bank.Transaction()
+                entry = bankconverter.bank.Transaction()
 
                 date_str = row['Date']
                 print(date_str)

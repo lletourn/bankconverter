@@ -1,8 +1,8 @@
 #!/bin/env python3
-import accesd
-import accesdcred
 import datetime
-import rbc
+import bankconverter.accesd
+import bankconverter.accesdcred
+import bankconverter.rbc
 
 from argparse import ArgumentParser
 from argparse import RawDescriptionHelpFormatter
@@ -21,11 +21,11 @@ def main(argv=None):  # IGNORE:C0111
 
         bank = None
         if args.bank_type == "accesd":
-            bank = accesd.AccesD()
+            bank = bankconverter.accesd.AccesD()
         elif args.bank_type == "accesdcred":
-            bank = accesdcred.AccesDCredit()
+            bank = bankconverter.accesdcred.AccesDCredit()
         elif args.bank_type == "rbc":
-            bank = rbc.RBC()
+            bank = bankconverter.rbc.RBC()
         else:
             raise(RuntimeError("Unknown bank type"))
 
