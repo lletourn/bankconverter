@@ -20,11 +20,11 @@ def main(argv=None):  # IGNORE:C0111
         start_date = datetime.datetime.strptime(args.start_date, "%Y-%m-%d")
 
         bank = None
-        if(args.bank_type == "accesd"):
+        if args.bank_type == "accesd":
             bank = accesd.AccesD()
-        if(args.bank_type == "accesdcred"):
+        elif args.bank_type == "accesdcred":
             bank = accesdcred.AccesDCredit()
-        elif(args.bank_type == "rbc"):
+        elif args.bank_type == "rbc":
             bank = rbc.RBC()
         else:
             raise(RuntimeError("Unknown bank type"))
